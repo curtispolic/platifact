@@ -6,13 +6,14 @@ namespace platifact;
 
 public class Game1 : Game
 {
-    Texture2D ballTexture;
-    Vector2 ballPosition;
+    GameObject ball = new GameObject();
+    Vector2 ballPosition; 
     float ballSpeed;
 
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
+    // Constructor
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -22,8 +23,7 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        ballPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2,
-        _graphics.PreferredBackBufferHeight / 2);
+        ballPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2);
         ballSpeed = 100f;
 
         base.Initialize();
@@ -33,7 +33,7 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        ballTexture = Content.Load<Texture2D>("ball");
+        ball.texture = Content.Load<Texture2D>("ball");
     }
 
     protected override void Update(GameTime gameTime)
@@ -65,22 +65,24 @@ public class Game1 : Game
         }
 
         // Out of bounds restrictions
-        if (ballPosition.X > _graphics.PreferredBackBufferWidth - ballTexture.Width / 2)
+        if (ballPosition.X > _graphics.PreferredBackBufferWidth - ball.texture.Width / 2)
         {
-            ballPosition.X = _graphics.PreferredBackBufferWidth - ballTexture.Width / 2;
-        }
-        else if (ballPosition.X < ballTexture.Width / 2)
-        {
-            ballPosition.X = ballTexture.Width / 2;
+            ballPosition.X = _graphics.PreferredBackBufferWidth - ball.texture.Width / 2;
         }
 
-        if (ballPosition.Y > _graphics.PreferredBackBufferHeight - ballTexture.Height / 2)
+        else if (ballPosition.X < ball.texture.Width / 2)
         {
-            ballPosition.Y = _graphics.PreferredBackBufferHeight - ballTexture.Height / 2;
+            ballPosition.X = ball.texture.Width / 2;
         }
-        else if (ballPosition.Y < ballTexture.Height / 2)
+
+        if (ballPosition.Y > _graphics.PreferredBackBufferHeight - ball.texture.Height / 2)
         {
-            ballPosition.Y = ballTexture.Height / 2;
+            ballPosition.Y = _graphics.PreferredBackBufferHeight - ball.texture.Height / 2;
+        }
+
+        else if (ballPosition.Y < ball.texture.Height / 2)
+        {
+            ballPosition.Y = ball.texture.Height / 2;
         }
 
         base.Update(gameTime);
@@ -92,12 +94,12 @@ public class Game1 : Game
 
         _spriteBatch.Begin();
         _spriteBatch.Draw(
-            ballTexture,
+            ball.texture,
             ballPosition,
             null,
             Color.White,
             0f,
-            new Vector2(ballTexture.Width / 2, ballTexture.Height / 2),
+            new Vector2(ball.texture.Width / 2, ball.texture.Height / 2),
             Vector2.One,
             SpriteEffects.None,
             0f
