@@ -84,16 +84,30 @@ public class Game1 : Game
 
         if (ball.DesiredBounds().Intersects(block.CurrentBounds()))
         {
+            // Intersect of the two objects
             Rectangle intersect = Rectangle.Intersect(ball.DesiredBounds(), block.CurrentBounds());
-            if (intersect.Height > intersect.Width)
-            {
-                ball.desiredPosition.X = ball.position.X;
-            }
-            else
-            {
-                ball.desiredPosition.Y = ball.position.Y;
-            }
 
+            // Check which direction coming from and the bigger clipping
+            // Player on the right
+            if (intersect.Width < intersect.Height && ball.position.X > block.position.X)
+                ball.desiredPosition.X += intersect.Width;
+
+            // Player on the left
+            if (intersect.Width < intersect.Height && ball.position.X < block.position.X)
+                ball.desiredPosition.X -= intersect.Width;
+
+            // Player on the bottom
+            if (intersect.Height < intersect.Width && ball.position.Y > block.position.Y)
+            {
+                ball.desiredPosition.Y += intersect.Height;
+                // Also have to reset jumpAccel to stop hangtime, but only if it's outdoing gravity
+                if (ball.jumpAccel.Y < gravity.Y * -1)
+                    ball.jumpAccel = gravity * -1;
+            }   
+                
+            // Player on top
+            if (intersect.Height < intersect.Width && ball.position.Y < block.position.Y)
+                ball.desiredPosition.Y -= intersect.Height;
         }
 
         ball.position = ball.desiredPosition;

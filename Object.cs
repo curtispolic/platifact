@@ -17,15 +17,15 @@ public class GameObject
         return new Rectangle(((int) this.position.X),
                              ((int) this.position.Y),
                              ((int) this.texture.Width),
-                             ((this.texture.Height)));
+                             ((int) this.texture.Height));
     }
 
     public Rectangle DesiredBounds()
     {
         return new Rectangle(((int)this.desiredPosition.X),
                              ((int)this.desiredPosition.Y),
-                             ((int)this.desiredPosition.X + (int)this.texture.Width),
-                             ((int)this.desiredPosition.Y + (int)this.texture.Height));
+                             ((int)this.texture.Width),
+                             ((int)this.texture.Height));
     }
 
 }
