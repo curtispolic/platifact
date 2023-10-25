@@ -5,8 +5,10 @@
   <Config />
   <SourceFiles>
     <File>/Users/polic.c/Projects/platifact/Content/ball.png</File>
+    <File>/Users/polic.c/Projects/platifact/Content/block.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>

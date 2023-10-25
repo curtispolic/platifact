@@ -7,8 +7,7 @@ namespace platifact;
 public class Game1 : Game
 {
     GameObject ball = new GameObject();
-    Vector2 ballPosition; 
-    float ballSpeed;
+    GameObject block = new GameObject();
 
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
@@ -23,8 +22,9 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        ballPosition = new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2);
-        ballSpeed = 100f;
+        block.position = new Vector2(300, 300);
+        ball.position = new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2);
+        ball.jumpAccel = new Vector2(0, 0);
 
         base.Initialize();
     }
@@ -34,6 +34,7 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         ball.texture = Content.Load<Texture2D>("ball");
+        block.texture = Content.Load<Texture2D>("block");
     }
 
     protected override void Update(GameTime gameTime)
@@ -41,65 +42,88 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        Vector2 gravity = new Vector2(0f, (float)(600 * gameTime.ElapsedGameTime.TotalSeconds));
+        ball.speed = new Vector2(0, 0);
+
+        // Get keyboard buttons being pressed
         var kstate = Keyboard.GetState();
 
         // Movement
-        if (kstate.IsKeyDown(Keys.W))
-        {
-            ballPosition.Y -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        }
-
-        if (kstate.IsKeyDown(Keys.S))
-        {
-            ballPosition.Y += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        }
+        if (kstate.IsKeyDown(Keys.W) && ball.jumpAccel.Y == 0)
+            ball.jumpAccel.Y = -25;
 
         if (kstate.IsKeyDown(Keys.A))
-        {
-            ballPosition.X -= ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        }
+            ball.speed -= new Vector2((float)(300 * gameTime.ElapsedGameTime.TotalSeconds), 0);
 
         if (kstate.IsKeyDown(Keys.D))
-        {
-            ballPosition.X += ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        }
-
+            ball.speed += new Vector2((float)(300 * gameTime.ElapsedGameTime.TotalSeconds), 0);
+        
         // Out of bounds restrictions
-        if (ballPosition.X > _graphics.PreferredBackBufferWidth - ball.texture.Width / 2)
+        if (ball.position.X > _graphics.PreferredBackBufferWidth - ball.texture.Width / 2)
+            ball.position.X = _graphics.PreferredBackBufferWidth - ball.texture.Width / 2;
+        
+        else if (ball.position.X < ball.texture.Width / 2)
+            ball.position.X = ball.texture.Width / 2;
+        
+        if (ball.position.Y > _graphics.PreferredBackBufferHeight - ball.texture.Height / 2)
+            ball.position.Y = _graphics.PreferredBackBufferHeight - ball.texture.Height / 2;
+       
+        else if (ball.position.Y < ball.texture.Height / 2)
+            ball.position.Y = ball.texture.Height / 2;
+
+        // Adjust jump acceleration for "jump feel"
+        if (ball.jumpAccel.Y < 0)
+            ball.jumpAccel.Y += (float)(40 * gameTime.ElapsedGameTime.TotalSeconds);
+
+        if (ball.jumpAccel.Y > 0)
+            ball.jumpAccel.Y = 0;
+
+        ball.speed += gravity;
+        ball.speed += ball.jumpAccel;
+        ball.desiredPosition = ball.position + ball.speed;
+
+        if (ball.DesiredBounds().Intersects(block.CurrentBounds()))
         {
-            ballPosition.X = _graphics.PreferredBackBufferWidth - ball.texture.Width / 2;
+            Rectangle intersect = Rectangle.Intersect(ball.DesiredBounds(), block.CurrentBounds());
+            if (intersect.Height > intersect.Width)
+            {
+                ball.desiredPosition.X = ball.position.X;
+            }
+            else
+            {
+                ball.desiredPosition.Y = ball.position.Y;
+            }
+
         }
 
-        else if (ballPosition.X < ball.texture.Width / 2)
-        {
-            ballPosition.X = ball.texture.Width / 2;
-        }
-
-        if (ballPosition.Y > _graphics.PreferredBackBufferHeight - ball.texture.Height / 2)
-        {
-            ballPosition.Y = _graphics.PreferredBackBufferHeight - ball.texture.Height / 2;
-        }
-
-        else if (ballPosition.Y < ball.texture.Height / 2)
-        {
-            ballPosition.Y = ball.texture.Height / 2;
-        }
-
+        ball.position = ball.desiredPosition;
+        
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.Clear(Color.LightPink);
 
         _spriteBatch.Begin();
         _spriteBatch.Draw(
             ball.texture,
-            ballPosition,
+            ball.position,
             null,
             Color.White,
             0f,
             new Vector2(ball.texture.Width / 2, ball.texture.Height / 2),
+            Vector2.One,
+            SpriteEffects.None,
+            0f
+        );
+        _spriteBatch.Draw(
+            block.texture,
+            block.position,
+            null,
+            Color.White,
+            0f,
+            new Vector2(block.texture.Width / 2, block.texture.Height / 2),
             Vector2.One,
             SpriteEffects.None,
             0f
