@@ -12,6 +12,7 @@ public class GameObject
     public Vector2 speed;
     public Vector2 jumpAccel;
     public bool isClipping;
+    public bool isNothing;
 
     public Rectangle CurrentBounds()
     {

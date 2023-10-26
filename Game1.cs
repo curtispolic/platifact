@@ -7,7 +7,7 @@ namespace platifact;
 public class Game1 : Game
 {
     GameObject player = new GameObject();
-    GameObject[] blocks = new GameObject[11];
+    GameObject[,] squares;
 
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
@@ -29,16 +29,26 @@ public class Game1 : Game
         player.position = new Vector2(_graphics.PreferredBackBufferWidth / 2, 0);
         player.jumpAccel = new Vector2(0, 0);
 
+        // Set the grid for objects
+        squares = new GameObject[(_graphics.PreferredBackBufferHeight / 64), (_graphics.PreferredBackBufferWidth / 64)];
 
         // Create the platform for the player to stand on
-        for (int i = 0; i < 640; i += 64)
+        for (int i = 0; i < squares.GetLength(0); i++)
         {
-            blocks[i / 64] = new GameObject();
-            blocks[i / 64].position = new Vector2(i, 352);
+            for (int j = 0; j < squares.GetLength(1); j++)
+            {
+                squares[i, j] = new GameObject();
+                squares[i, j].position = new Vector2(j * 64, i * 64);
+                if (i == 5)
+                {
+                    squares[i, j].isNothing = false;
+                }
+                else
+                {
+                    squares[i, j].isNothing = true;
+                }
+            }     
         }
-
-        blocks[10] = new GameObject();
-        blocks[10].position = new Vector2(100, 200);
 
         base.Initialize();
     }
@@ -49,22 +59,30 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         player.texture = Content.Load<Texture2D>("player");
-        foreach (GameObject block in blocks)
+        foreach (GameObject block in squares)
         {
-            block.texture = Content.Load<Texture2D>("block");
+            if (!block.isNothing)
+            {
+                block.texture = Content.Load<Texture2D>("block");
+            }
         }
     }
 
     protected override void Update(GameTime gameTime)
     {
+        // Quit on escape or gamepad back
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        {
             Exit();
+        }
 
+        // Set gravity and player speed for the frame
         Vector2 gravity = new Vector2(0f, (float)(600 * gameTime.ElapsedGameTime.TotalSeconds));
         player.speed = new Vector2(0, 0);
 
         // Get keyboard buttons being pressed
         var kstate = Keyboard.GetState();
+        var mstate = Mouse.GetState();
 
         // Movement
         if (kstate.IsKeyDown(Keys.W) && player.jumpAccel.Y == 0)
@@ -107,50 +125,66 @@ public class Game1 : Game
 
         player.isClipping = false;
 
-        foreach (GameObject block in blocks)
+        // Detecting collision with blocks
+        foreach (GameObject block in squares)
         {
-            if (player.DesiredBounds().Intersects(block.CurrentBounds()))
+            if (!block.isNothing)
             {
-                // Intersect of the two objects
-                Rectangle intersect = Rectangle.Intersect(player.DesiredBounds(), block.CurrentBounds());
-
-                // Check which direction coming from and the bigger clipping
-                // Player on the right
-                if (intersect.Width < intersect.Height && player.position.X > block.position.X)
+                if (player.DesiredBounds().Intersects(block.CurrentBounds()))
                 {
-                    player.desiredPosition.X += intersect.Width;
-                }
+                    // Intersect of the two objects
+                    Rectangle intersect = Rectangle.Intersect(player.DesiredBounds(), block.CurrentBounds());
 
-                // Player on the left
-                if (intersect.Width < intersect.Height && player.position.X < block.position.X)
-                {
-                    player.desiredPosition.X -= intersect.Width;
-                }
+                    // Check which direction coming from and the bigger clipping
+                    // Player on the right
+                    if (intersect.Width < intersect.Height && player.position.X > block.position.X)
+                    {
+                        player.desiredPosition.X += intersect.Width;
+                    }
 
-                // Player on the bottom
-                if (intersect.Height < intersect.Width && player.position.Y > block.position.Y)
-                {
-                    player.desiredPosition.Y += intersect.Height;
-                    // Also have to reset jumpAccel to stop hangtime, but only if it's outdoing gravity
-                    if (player.jumpAccel.Y < gravity.Y * -1)
-                        player.jumpAccel = gravity * -1;
-                }
+                    // Player on the left
+                    if (intersect.Width < intersect.Height && player.position.X < block.position.X)
+                    {
+                        player.desiredPosition.X -= intersect.Width;
+                    }
 
-                // Player on top
-                if (intersect.Height < intersect.Width && player.position.Y < block.position.Y)
-                {
-                    // Only count clipping on the top to prevent wall clinging
-                    player.isClipping = true;
+                    // Player on the bottom
+                    if (intersect.Height < intersect.Width && player.position.Y > block.position.Y)
+                    {
+                        player.desiredPosition.Y += intersect.Height;
+                        // Also have to reset jumpAccel to stop hangtime, but only if it's outdoing gravity
+                        if (player.jumpAccel.Y < gravity.Y * -1)
+                            player.jumpAccel = gravity * -1;
+                    }
 
-                    // Stop JumpAccel to stop jitters
-                    player.jumpAccel.Y = 0;
+                    // Player on top
+                    if (intersect.Height < intersect.Width && player.position.Y < block.position.Y)
+                    {
+                        // Only count clipping on the top to prevent wall clinging
+                        player.isClipping = true;
 
-                    player.desiredPosition.Y -= intersect.Height;
-                }
+                        // Stop JumpAccel to stop jitters
+                        player.jumpAccel.Y = 0;
+
+                        player.desiredPosition.Y -= intersect.Height;
+                    }
                     
+                }
             }
         }
 
+        if (mstate.LeftButton == ButtonState.Pressed)
+        {
+            int x = mstate.X / 64;
+            int y = mstate.Y / 64;
+            GameObject clicked = squares[y, x];
+            if (clicked.isNothing)
+            {
+                clicked.isNothing = false;
+                clicked.texture = Content.Load<Texture2D>("ball");
+            }
+        }
+        
         player.position = player.desiredPosition;
         
         base.Update(gameTime);
@@ -158,9 +192,12 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
+        // Draw background colour
         GraphicsDevice.Clear(Color.LightPink);
 
         _spriteBatch.Begin();
+
+        // Draw player
         _spriteBatch.Draw(
             player.texture,
             player.position,
@@ -173,20 +210,26 @@ public class Game1 : Game
             0f
         );
 
-        foreach (GameObject block in blocks)
+        // Draw blocks
+        foreach (GameObject block in squares)
         {
-            _spriteBatch.Draw(
-                block.texture,
-                block.position,
-                null,
-                Color.White,
-                0f,
-                new Vector2(0, 0),
-                Vector2.One,
-                SpriteEffects.None,
-                0f
-            );
+            if (!block.isNothing)
+            {
+                _spriteBatch.Draw(
+                    block.texture,
+                    block.position,
+                    null,
+                    Color.White,
+                    0f,
+                    new Vector2(0, 0),
+                    Vector2.One,
+                    SpriteEffects.None,
+                    0f
+                );
+            }
+            
         }
+
         _spriteBatch.End();
 
         base.Draw(gameTime);
