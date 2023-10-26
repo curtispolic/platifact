@@ -7,7 +7,7 @@ namespace platifact;
 public class Game1 : Game
 {
     GameObject player = new GameObject();
-    GameObject[] blocks = new GameObject[10];
+    GameObject[] blocks = new GameObject[11];
 
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
@@ -36,6 +36,9 @@ public class Game1 : Game
             blocks[i / 64] = new GameObject();
             blocks[i / 64].position = new Vector2(i, 352);
         }
+
+        blocks[10] = new GameObject();
+        blocks[10].position = new Vector2(100, 200);
 
         base.Initialize();
     }
@@ -93,9 +96,16 @@ public class Game1 : Game
         if (player.jumpAccel.Y > 0)
             player.jumpAccel.Y = 0;
 
-        player.speed += gravity;
+        // Gravity applies only if not clipping in order for accurate intersection detection
+        if (!player.isClipping)
+        {
+            player.speed += gravity;
+        }
+
         player.speed += player.jumpAccel;
         player.desiredPosition = player.position + player.speed;
+
+        player.isClipping = false;
 
         foreach (GameObject block in blocks)
         {
@@ -106,12 +116,16 @@ public class Game1 : Game
 
                 // Check which direction coming from and the bigger clipping
                 // Player on the right
-                if (intersect.Width < intersect.Height && player.position.X >= block.position.X)
+                if (intersect.Width < intersect.Height && player.position.X > block.position.X)
+                {
                     player.desiredPosition.X += intersect.Width;
+                }
 
                 // Player on the left
                 if (intersect.Width < intersect.Height && player.position.X < block.position.X)
+                {
                     player.desiredPosition.X -= intersect.Width;
+                }
 
                 // Player on the bottom
                 if (intersect.Height < intersect.Width && player.position.Y > block.position.Y)
@@ -123,8 +137,17 @@ public class Game1 : Game
                 }
 
                 // Player on top
-                if (intersect.Height < intersect.Width && player.position.Y <= block.position.Y)
+                if (intersect.Height < intersect.Width && player.position.Y < block.position.Y)
+                {
+                    // Only count clipping on the top to prevent wall clinging
+                    player.isClipping = true;
+
+                    // Stop JumpAccel to stop jitters
+                    player.jumpAccel.Y = 0;
+
                     player.desiredPosition.Y -= intersect.Height;
+                }
+                    
             }
         }
 

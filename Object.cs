@@ -11,6 +11,7 @@ public class GameObject
     public Vector2 desiredPosition;
     public Vector2 speed;
     public Vector2 jumpAccel;
+    public bool isClipping;
 
     public Rectangle CurrentBounds()
     {
