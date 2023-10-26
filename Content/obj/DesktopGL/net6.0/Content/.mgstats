@@ -1,3 +1,4 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
 "/Users/polic.c/Projects/platifact/Content/ball.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/ball.xnb","TextureProcessor","Texture2DContent",8368,16469,0.138704
 "/Users/polic.c/Projects/platifact/Content/block.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/block.xnb","TextureProcessor","Texture2DContent",998,16469,0.134674
+"/Users/polic.c/Projects/platifact/Content/player.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/player.xnb","TextureProcessor","Texture2DContent",4237,8277,0.128786
