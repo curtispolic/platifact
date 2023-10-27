@@ -1,4 +1,4 @@
 ﻿
-using var game = new platifact.Game1();
+using var game = new platifact.PlatifactGame();
 game.Run();
 
