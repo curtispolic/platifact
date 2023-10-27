@@ -8,6 +8,13 @@ public class StaticPlatifactObject
     public Texture2D texture;
     public Vector2 position;
     public bool isNothing;
+    public bool isBlocking;
+
+    public StaticPlatifactObject()
+    {
+        isNothing = true;
+        isBlocking = false;
+    }
 
     public Rectangle CurrentBounds()
     {
@@ -17,7 +24,7 @@ public class StaticPlatifactObject
                              ((int) this.texture.Height));
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public virtual void Draw(SpriteBatch spriteBatch)
     {
         spriteBatch.Draw(
             this.texture,

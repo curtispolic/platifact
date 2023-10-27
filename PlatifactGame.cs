@@ -27,8 +27,7 @@ public class PlatifactGame : Game
     {
         // Set the players starting parameteres
         player.position = new Vector2(_graphics.PreferredBackBufferWidth / 2, 0);
-        player.jumpAccel = new Vector2(0, 0);
-
+        
         // Set the grid for objects
         squares = new StaticPlatifactObject[(_graphics.PreferredBackBufferHeight / 64 + 1), (_graphics.PreferredBackBufferWidth / 64 + 1)];
 
@@ -37,16 +36,15 @@ public class PlatifactGame : Game
         {
             for (int j = 0; j < squares.GetLength(1); j++)
             {
-                squares[i, j] = new StaticPlatifactObject();
-                squares[i, j].position = new Vector2(j * 64, i * 64);
                 if (i == 5)
                 {
-                    squares[i, j].isNothing = false;
+                    squares[i, j] = new Platform();
                 }
                 else
                 {
-                    squares[i, j].isNothing = true;
+                    squares[i, j] = new StaticPlatifactObject();
                 }
+                squares[i, j].position = new Vector2(j * 64, i * 64);
             }     
         }
 
@@ -61,7 +59,7 @@ public class PlatifactGame : Game
         player.texture = Content.Load<Texture2D>("player");
         foreach (StaticPlatifactObject block in squares)
         {
-            if (!block.isNothing)
+            if (block is Platform)
             {
                 block.texture = Content.Load<Texture2D>("block");
             }
@@ -85,7 +83,7 @@ public class PlatifactGame : Game
         // Detecting collision with blocks
         foreach (StaticPlatifactObject block in squares)
         {
-            if (!block.isNothing)
+            if ((!block.isNothing) && block.isBlocking)
             {
                 if (player.DesiredBounds().Intersects(block.CurrentBounds()))
                 {
@@ -139,10 +137,18 @@ public class PlatifactGame : Game
                 int x = mstate.X / 64;
                 int y = mstate.Y / 64;
                 StaticPlatifactObject clicked = squares[y, x];
+
+                // Handle clicking on empty space
                 if (clicked.isNothing)
                 {
-                    clicked.isNothing = false;
-                    clicked.texture = Content.Load<Texture2D>("furnace_unlit");
+                    Miner newClicked = new Miner(squares[y+1, x]);
+                    if (squares[y + 1, x] is Platform)
+                    {
+                        newClicked.isRunning = true;
+                    }
+                    newClicked.position = clicked.position;
+                    newClicked.texture = Content.Load<Texture2D>("miner_spritesheet");
+                    squares[y, x] =  newClicked;
                 }
             }
 
@@ -154,12 +160,22 @@ public class PlatifactGame : Game
                 StaticPlatifactObject clicked = squares[y, x];
                 if (!clicked.isNothing)
                 {
-                    clicked.isNothing = true;
-                    clicked.texture = null;
+                    StaticPlatifactObject newClicked = new StaticPlatifactObject();
+                    newClicked.position = clicked.position;
+                    squares[y, x] = newClicked;
                 }
             }
         }
 
+        // Updating miners
+        foreach (StaticPlatifactObject block in squares)
+        {
+            if (block is Miner)
+            {
+                StaticPlatifactObject below = squares[(int)block.position.Y / 64 + 1, (int)block.position.X / 64];
+                ((Miner)block).Update(gameTime, below);
+            }
+        }
         
         
         player.position = player.desiredPosition;
@@ -183,8 +199,7 @@ public class PlatifactGame : Game
             if (!block.isNothing)
             {
                 block.Draw(_spriteBatch);
-            }
-            
+            }   
         }
 
         _spriteBatch.End();
