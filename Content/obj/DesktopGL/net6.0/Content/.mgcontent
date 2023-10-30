@@ -10,8 +10,10 @@
     <File>/Users/polic.c/Projects/platifact/Content/furnace_unlit.png</File>
     <File>/Users/polic.c/Projects/platifact/Content/miner_spritesheet.png</File>
     <File>/Users/polic.c/Projects/platifact/Content/player.png</File>
+    <File>/Users/polic.c/Projects/platifact/Content/stone.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

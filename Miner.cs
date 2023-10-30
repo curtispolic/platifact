@@ -9,6 +9,7 @@ public class Miner : StaticPlatifactObject
     public string oreMining;
     public bool isRunning;
     public StaticPlatifactObject belowObject;
+    private int mineTimer;
 
     // Constructor
     public Miner(StaticPlatifactObject belowObj)
@@ -19,6 +20,7 @@ public class Miner : StaticPlatifactObject
         isNothing = false;
         isBlocking = false;
         belowObject = belowObj;
+        mineTimer = 0;
     }
 
     public override void Draw(SpriteBatch spriteBatch)
@@ -65,13 +67,34 @@ public class Miner : StaticPlatifactObject
         }
 
         // Only run if plaform is below
-        if (belowObject is Platform)
+        if (belowObject is Ore)
         {
             isRunning = true;
         }
         else
         {
             isRunning = false;
+        }
+
+        // Only update mineTimer if mining
+        if (isRunning)
+        {
+            mineTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (mineTimer > 2000 && ((Ore)belowObject).oreAmount > 0)
+            {
+                mineTimer -= 2000;
+                containedOreAmount += 1;
+                ((Ore)belowObject).oreAmount--;
+            }
+
+            // Destroy below block when it's out of ore
+            if (((Ore)belowObject).oreAmount == 0)
+            {
+                // TODO: manager class to handle changing of blocks from any class
+                belowObject.isNothing = true;
+                belowObject.isBlocking = false;
+                isRunning = false;
+            }
         }
     }
 

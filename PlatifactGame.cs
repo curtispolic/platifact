@@ -36,9 +36,9 @@ public class PlatifactGame : Game
         {
             for (int j = 0; j < squares.GetLength(1); j++)
             {
-                if (i == 5)
+                if (i >= 5)
                 {
-                    squares[i, j] = new Platform();
+                    squares[i, j] = new Ore();
                 }
                 else
                 {
@@ -59,9 +59,9 @@ public class PlatifactGame : Game
         player.texture = Content.Load<Texture2D>("player");
         foreach (StaticPlatifactObject block in squares)
         {
-            if (block is Platform)
+            if (block is Ore)
             {
-                block.texture = Content.Load<Texture2D>("block");
+                block.texture = Content.Load<Texture2D>("stone");
             }
         }
     }
@@ -142,7 +142,7 @@ public class PlatifactGame : Game
                 if (clicked.isNothing)
                 {
                     Miner newClicked = new Miner(squares[y+1, x]);
-                    if (squares[y + 1, x] is Platform)
+                    if (squares[y + 1, x] is Ore)
                     {
                         newClicked.isRunning = true;
                     }
