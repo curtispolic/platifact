@@ -8,9 +8,13 @@ public class PlatifactGame : Game
 {
     Player player = new Player();
     StaticPlatifactObject[,] squares;
+    UIElement[] UIElements;
 
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private bool UIDisplayed;
+    private bool leftMousePressed;
+    private bool rightMousePressed;
 
     // Constructor
     public PlatifactGame()
@@ -30,6 +34,13 @@ public class PlatifactGame : Game
         
         // Set the grid for objects
         squares = new StaticPlatifactObject[(_graphics.PreferredBackBufferHeight / 64 + 1), (_graphics.PreferredBackBufferWidth / 64 + 1)];
+
+        // Set the array for UI elements
+        UIElements = new UIElement[100];
+
+        UIDisplayed = false;
+        leftMousePressed = false;
+        rightMousePressed = false;
 
         // Create the platform for the player to stand on
         for (int i = 0; i < squares.GetLength(0); i++)
@@ -132,7 +143,7 @@ public class PlatifactGame : Game
         if (0 <= mstate.X && mstate.X <= _graphics.PreferredBackBufferWidth && 0 <= mstate.Y && mstate.Y <= _graphics.PreferredBackBufferHeight)
         {
             // Left click handling
-            if (mstate.LeftButton == ButtonState.Pressed)
+            if (mstate.LeftButton == ButtonState.Pressed && leftMousePressed == false)
             {
                 int x = mstate.X / 64;
                 int y = mstate.Y / 64;
@@ -141,29 +152,54 @@ public class PlatifactGame : Game
                 // Handle clicking on empty space
                 if (clicked.isNothing)
                 {
-                    Miner newClicked = new Miner(squares[y+1, x]);
+                    Miner newClicked = new Miner(squares[y + 1, x]);
                     if (squares[y + 1, x] is Ore)
                     {
                         newClicked.isRunning = true;
                     }
                     newClicked.position = clicked.position;
                     newClicked.texture = Content.Load<Texture2D>("miner_spritesheet");
-                    squares[y, x] =  newClicked;
+                    squares[y, x] = newClicked;
                 }
+
+                // Handle clicking on miners
+                if (clicked is Miner)
+                {
+                    UIElements[0] = new MinerPanel((Miner)clicked);
+                    UIElements[0].texture = Content.Load<Texture2D>("miner_panel");
+                    UIDisplayed = true;
+                }
+
+                leftMousePressed = true;
             }
 
             // Right click handling
-            else if (mstate.RightButton == ButtonState.Pressed)
+            else if (mstate.RightButton == ButtonState.Pressed && rightMousePressed == false)
             {
                 int x = mstate.X / 64;
                 int y = mstate.Y / 64;
                 StaticPlatifactObject clicked = squares[y, x];
+
+                // Remove the object
                 if (!clicked.isNothing)
                 {
                     StaticPlatifactObject newClicked = new StaticPlatifactObject();
                     newClicked.position = clicked.position;
                     squares[y, x] = newClicked;
                 }
+
+                rightMousePressed = true;
+            }
+
+            // Handle release of mouse button
+            else if (mstate.LeftButton == ButtonState.Released)
+            {
+                leftMousePressed = false;
+            }
+
+            else if (mstate.RightButton == ButtonState.Released)
+            {
+                rightMousePressed = false;
             }
         }
 
@@ -190,9 +226,6 @@ public class PlatifactGame : Game
 
         _spriteBatch.Begin();
 
-        // Draw player
-        player.Draw(_spriteBatch);
-
         // Draw blocks
         foreach (StaticPlatifactObject block in squares)
         {
@@ -200,6 +233,18 @@ public class PlatifactGame : Game
             {
                 block.Draw(_spriteBatch);
             }   
+        }
+
+        // Draw player
+        player.Draw(_spriteBatch);
+
+        // Draw UI elements
+        foreach (UIElement ui in UIElements)
+        {
+            if (ui is UIElement)
+            {
+                ui.Draw(_spriteBatch);
+            }
         }
 
         _spriteBatch.End();

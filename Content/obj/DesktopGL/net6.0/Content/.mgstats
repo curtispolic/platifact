@@ -1,8 +1,8 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
 "/Users/polic.c/Projects/platifact/Content/ball.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/ball.xnb","TextureProcessor","Texture2DContent",8368,16469,0.138704
-"/Users/polic.c/Projects/platifact/Content/block.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/block.xnb","TextureProcessor","Texture2DContent",998,16469,0.134674
 "/Users/polic.c/Projects/platifact/Content/furnace_lit.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/furnace_lit.xnb","TextureProcessor","Texture2DContent",6794,16469,0.241888
 "/Users/polic.c/Projects/platifact/Content/furnace_unlit.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/furnace_unlit.xnb","TextureProcessor","Texture2DContent",5638,16469,0.005818
+"/Users/polic.c/Projects/platifact/Content/miner_panel.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/miner_panel.xnb","TextureProcessor","Texture2DContent",4086,492885,0.160637
 "/Users/polic.c/Projects/platifact/Content/miner_spritesheet.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/miner_spritesheet.xnb","TextureProcessor","Texture2DContent",7046,32853,0.255384
 "/Users/polic.c/Projects/platifact/Content/player.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/player.xnb","TextureProcessor","Texture2DContent",4237,8277,0.128786
 "/Users/polic.c/Projects/platifact/Content/stone.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/stone.xnb","TextureProcessor","Texture2DContent",1724,16469,0.256166
