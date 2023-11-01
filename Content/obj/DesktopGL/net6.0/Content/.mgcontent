@@ -5,6 +5,7 @@
   <Config />
   <SourceFiles>
     <File>/Users/polic.c/Projects/platifact/Content/ball.png</File>
+    <File>/Users/polic.c/Projects/platifact/Content/font.spritefont</File>
     <File>/Users/polic.c/Projects/platifact/Content/furnace_lit.png</File>
     <File>/Users/polic.c/Projects/platifact/Content/furnace_unlit.png</File>
     <File>/Users/polic.c/Projects/platifact/Content/miner_panel.png</File>
@@ -13,6 +14,7 @@
     <File>/Users/polic.c/Projects/platifact/Content/stone.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

@@ -14,4 +14,9 @@ public class MinerPanel : UIElement
         position = new Vector2(100, 100);
         miner = m;
     }
+
+    public void DrawContents(SpriteBatch spriteBatch, SpriteFont font)
+    {
+        spriteBatch.DrawString(font, miner.containedOreAmount.ToString(), new Vector2(400, 140), Color.Pink);
+    }
 }

@@ -1,5 +1,6 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
 "/Users/polic.c/Projects/platifact/Content/ball.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/ball.xnb","TextureProcessor","Texture2DContent",8368,16469,0.138704
+"/Users/polic.c/Projects/platifact/Content/font.spritefont","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/font.xnb","FontDescriptionProcessor","SpriteFontContent",2008,21535,0.711521
 "/Users/polic.c/Projects/platifact/Content/furnace_lit.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/furnace_lit.xnb","TextureProcessor","Texture2DContent",6794,16469,0.241888
 "/Users/polic.c/Projects/platifact/Content/furnace_unlit.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/furnace_unlit.xnb","TextureProcessor","Texture2DContent",5638,16469,0.005818
 "/Users/polic.c/Projects/platifact/Content/miner_panel.png","/Users/polic.c/Projects/platifact/Content/bin/DesktopGL/Content/miner_panel.xnb","TextureProcessor","Texture2DContent",4086,492885,0.160637

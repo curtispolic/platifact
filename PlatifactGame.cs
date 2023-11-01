@@ -15,6 +15,7 @@ public class PlatifactGame : Game
     private bool UIDisplayed;
     private bool leftMousePressed;
     private bool rightMousePressed;
+    private SpriteFont font;
 
     // Constructor
     public PlatifactGame()
@@ -75,6 +76,8 @@ public class PlatifactGame : Game
                 block.texture = Content.Load<Texture2D>("stone");
             }
         }
+
+        font = Content.Load<SpriteFont>("font");
     }
 
     protected override void Update(GameTime gameTime)
@@ -142,64 +145,80 @@ public class PlatifactGame : Game
         // Only handle clicks inside the game window
         if (0 <= mstate.X && mstate.X <= _graphics.PreferredBackBufferWidth && 0 <= mstate.Y && mstate.Y <= _graphics.PreferredBackBufferHeight)
         {
-            // Left click handling
-            if (mstate.LeftButton == ButtonState.Pressed && leftMousePressed == false)
+            // Handle clicking when there is no UI
+            if (!UIDisplayed)
             {
-                int x = mstate.X / 64;
-                int y = mstate.Y / 64;
-                StaticPlatifactObject clicked = squares[y, x];
-
-                // Handle clicking on empty space
-                if (clicked.isNothing)
+                // Left click handling
+                if (mstate.LeftButton == ButtonState.Pressed && leftMousePressed == false)
                 {
-                    Miner newClicked = new Miner(squares[y + 1, x]);
-                    if (squares[y + 1, x] is Ore)
+                    int x = mstate.X / 64;
+                    int y = mstate.Y / 64;
+                    StaticPlatifactObject clicked = squares[y, x];
+
+                    // Handle clicking on empty space
+                    if (clicked.isNothing)
                     {
-                        newClicked.isRunning = true;
+                        Miner newClicked = new Miner(squares[y + 1, x]);
+                        if (squares[y + 1, x] is Ore)
+                        {
+                            newClicked.isRunning = true;
+                        }
+                        newClicked.position = clicked.position;
+                        newClicked.texture = Content.Load<Texture2D>("miner_spritesheet");
+                        squares[y, x] = newClicked;
                     }
-                    newClicked.position = clicked.position;
-                    newClicked.texture = Content.Load<Texture2D>("miner_spritesheet");
-                    squares[y, x] = newClicked;
+
+                    // Handle clicking on miners
+                    if (clicked is Miner)
+                    {
+                        UIElements[0] = new MinerPanel((Miner)clicked);
+                        UIElements[0].texture = Content.Load<Texture2D>("miner_panel");
+                        UIDisplayed = true;
+                    }
+
+                    leftMousePressed = true;
                 }
 
-                // Handle clicking on miners
-                if (clicked is Miner)
+                // Right click handling
+                if (mstate.RightButton == ButtonState.Pressed && rightMousePressed == false)
                 {
-                    UIElements[0] = new MinerPanel((Miner)clicked);
-                    UIElements[0].texture = Content.Load<Texture2D>("miner_panel");
-                    UIDisplayed = true;
+                    int x = mstate.X / 64;
+                    int y = mstate.Y / 64;
+                    StaticPlatifactObject clicked = squares[y, x];
+
+                    // Remove the object
+                    if (!clicked.isNothing)
+                    {
+                        StaticPlatifactObject newClicked = new StaticPlatifactObject();
+                        newClicked.position = clicked.position;
+                        squares[y, x] = newClicked;
+                    }
+
+                    rightMousePressed = true;
                 }
 
-                leftMousePressed = true;
-            }
-
-            // Right click handling
-            else if (mstate.RightButton == ButtonState.Pressed && rightMousePressed == false)
-            {
-                int x = mstate.X / 64;
-                int y = mstate.Y / 64;
-                StaticPlatifactObject clicked = squares[y, x];
-
-                // Remove the object
-                if (!clicked.isNothing)
+                // Handle release of mouse buttons
+                if (mstate.LeftButton == ButtonState.Released)
                 {
-                    StaticPlatifactObject newClicked = new StaticPlatifactObject();
-                    newClicked.position = clicked.position;
-                    squares[y, x] = newClicked;
+                    leftMousePressed = false;
                 }
 
-                rightMousePressed = true;
+                if (mstate.RightButton == ButtonState.Released)
+                {
+                    rightMousePressed = false;
+                }
             }
 
-            // Handle release of mouse button
-            else if (mstate.LeftButton == ButtonState.Released)
+            // Clicking when UI is displayed
+            else
             {
-                leftMousePressed = false;
-            }
-
-            else if (mstate.RightButton == ButtonState.Released)
-            {
-                rightMousePressed = false;
+                // Right click handling
+                if (mstate.RightButton == ButtonState.Pressed && rightMousePressed == false)
+                {
+                    UIElements[0] = null;
+                    rightMousePressed = true;
+                    UIDisplayed = false;
+                }
             }
         }
 
@@ -244,6 +263,10 @@ public class PlatifactGame : Game
             if (ui is UIElement)
             {
                 ui.Draw(_spriteBatch);
+                if (ui is MinerPanel)
+                {
+                    ((MinerPanel)ui).DrawContents(_spriteBatch, font);
+                }
             }
         }
 

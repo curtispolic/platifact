@@ -25,6 +25,13 @@
 /processorParam:TextureFormat=Color
 /build:ball.png
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+
 #begin furnace_lit.png
 /importer:TextureImporter
 /processor:TextureProcessor
