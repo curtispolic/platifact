@@ -5,18 +5,16 @@ namespace platifact;
 
 public class Miner : StaticPlatifactObject
 {
-    public int containedOreAmount;
-    public string oreMining;
     public bool isRunning;
     public StaticPlatifactObject belowObject;
     private int mineTimer;
+    public InventoryItem containedItem;
 
     // Constructor
     public Miner(StaticPlatifactObject belowObj)
     {
         isRunning = false;
-        containedOreAmount = 0;
-        oreMining = CheckMining();
+        containedItem = new InventoryItem(CheckMining());
         isNothing = false;
         isBlocking = false;
         belowObject = belowObj;
@@ -83,7 +81,7 @@ public class Miner : StaticPlatifactObject
             if (mineTimer > 2000 && ((Ore)belowObject).oreAmount > 0)
             {
                 mineTimer -= 2000;
-                containedOreAmount += 1;
+                containedItem.amount += 1;
                 ((Ore)belowObject).oreAmount--;
             }
 
@@ -98,9 +96,9 @@ public class Miner : StaticPlatifactObject
         }
     }
 
-    public string CheckMining()
+    public Ore CheckMining()
     {
-        return "stone";
+        return new Ore();
     }
 
 }

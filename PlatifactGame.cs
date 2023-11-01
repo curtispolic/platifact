@@ -165,6 +165,7 @@ public class PlatifactGame : Game
                         }
                         newClicked.position = clicked.position;
                         newClicked.texture = Content.Load<Texture2D>("miner_spritesheet");
+                        newClicked.containedItem.texture = Content.Load<Texture2D>("stone");
                         squares[y, x] = newClicked;
                     }
 
@@ -266,6 +267,7 @@ public class PlatifactGame : Game
                 if (ui is MinerPanel)
                 {
                     ((MinerPanel)ui).DrawContents(_spriteBatch, font);
+                    ((MinerPanel)ui).miner.containedItem.Draw(_spriteBatch, new Vector2(420, 160));
                 }
             }
         }

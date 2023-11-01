@@ -17,6 +17,6 @@ public class MinerPanel : UIElement
 
     public void DrawContents(SpriteBatch spriteBatch, SpriteFont font)
     {
-        spriteBatch.DrawString(font, miner.containedOreAmount.ToString(), new Vector2(400, 140), Color.Pink);
+        spriteBatch.DrawString(font, miner.containedItem.amount.ToString(), new Vector2(400, 140), Color.Cyan);
     }
 }
